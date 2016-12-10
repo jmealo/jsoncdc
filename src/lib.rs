@@ -4,13 +4,11 @@ use std::mem::size_of;
 
 extern crate rpgffi as pg;
 
-
 macro_rules! log {
     ($msg:expr) => {
         elog(file!(), line!(), "log()", $msg)
     }
 }
-
 
 // Implementation of initialization and callbacks.
 
@@ -19,7 +17,29 @@ pub unsafe extern "C" fn init(cb: *mut pg::OutputPluginCallbacks) {
     (*cb).begin_cb = Some(begin);
     (*cb).change_cb = Some(change);
     (*cb).commit_cb = Some(commit);
+    //(*cb).filter_by_origin_cb = Some(filter_by_origin);
+    (*cb).message_cb = Some(message);
     (*cb).shutdown_cb = Some(shutdown);
+}
+
+/*
+unsafe extern "C" fn filter_by_origin(ctx: *mut pg::Struct_LogicalDecodingContext,
+                                      origin_id: pg::RepOriginId) -> pg::_bool {
+    return CFALSE;
+}*/
+
+unsafe extern "C" fn message(ctx: *mut pg::Struct_LogicalDecodingContext,
+                                            txn: *mut pg::ReorderBufferTXN,
+                                            lsn: pg::XLogRecPtr,
+                                            transactional: pg::_bool,
+                                            prefix: *const i8,
+                                            message_size: pg::Size,
+                                            message: *const i8
+) {
+    let s = CString::new("{ \"begin\": %u }").unwrap();
+    pg::OutputPluginPrepareWrite(ctx, CTRUE);
+    pg::appendStringInfo((*ctx).out, s.as_ptr(), (*txn).xid);
+    pg::OutputPluginWrite(ctx, CTRUE);
 }
 
 unsafe extern "C" fn startup(ctx: *mut pg::Struct_LogicalDecodingContext,

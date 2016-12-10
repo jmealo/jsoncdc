@@ -1,0 +1,21 @@
+\set ECHO none
+ created logical replication slot
+
+ msg1
+ { "message": message, "prefix": prefix, "transactional": false}
+ msg2
+ { "message": message, "prefix": prefix, "transactional": false}
+ msg3
+ { "message": message, "prefix": prefix, "transactional": false}
+ msg4
+ { "message": message, "prefix": prefix, "transactional": false}
+ msg5
+ { "message": message, "prefix": prefix, "transactional": false}
+ msg6
+ { "message": message, "prefix": prefix, "transactional": false}
+ msg7
+ { "message": message, "prefix": prefix, "transactional": false}
+ žluťoučký kůň
+ { "message": message, "prefix": prefix, "transactional": false}
+
+ deleted logical replication slot
